@@ -1,4 +1,4 @@
-package com.mediscreen.reports.controllers;
+package com.mediscreen.reports.controllers.api;
 
 import java.util.List;
 
