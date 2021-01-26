@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
+import com.mediscreen.reports.exceptions.PatientException;
 import com.mediscreen.reports.proxies.MicroserviceNotesProxy;
 import com.mediscreen.reports.proxies.MicroservicePatientProxy;
 import com.mediscreen.reports.util.AgeCalculator;
@@ -46,4 +47,18 @@ public class ReportServiceImpl implements ReportService {
         return AgeCalculator.getPatientAge(birthdate);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isPatientsMale(final String sex) throws PatientException {
+        boolean isPatientsMale = false;
+        if (sex.toUpperCase().contains("M")) {
+            isPatientsMale = true;
+            return isPatientsMale;
+        } else if (!sex.toUpperCase().contains("F")) {
+            throw new PatientException(
+                    "The patient doesn't contain a sex with 'M' or 'F' !");
+        }
+        return isPatientsMale;
+    }
 }

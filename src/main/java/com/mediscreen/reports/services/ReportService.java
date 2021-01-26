@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
+import com.mediscreen.reports.exceptions.PatientException;
 
 public interface ReportService {
 
@@ -30,4 +31,13 @@ public interface ReportService {
      * @return int age the patient's age
      */
     int getPatientAge(final String birthdate);
+
+    /**
+     * Method used to determinate if patient's is male or female.
+     *
+     * @param sex
+     * @return boolean isPatientMale
+     * @throws PatientException
+     */
+    boolean isPatientsMale(final String sex) throws PatientException;
 }

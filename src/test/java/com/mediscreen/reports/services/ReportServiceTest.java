@@ -1,6 +1,7 @@
 package com.mediscreen.reports.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
+import com.mediscreen.reports.exceptions.PatientException;
 import com.mediscreen.reports.proxies.MicroserviceNotesProxy;
 import com.mediscreen.reports.proxies.MicroservicePatientProxy;
 
@@ -43,6 +45,43 @@ public class ReportServiceTest {
         notesList.add(new NoteDto("note 1"));
         notesList.add(new NoteDto("note 2"));
         notesList.add(new NoteDto("note 3"));
+    }
+
+    @Test
+    @Tag("isPatientsMale")
+    @DisplayName("isPatientsMale - OK - Male")
+    public void givenPatientsMale_whenCheckIfMale_thenReturnTrue()
+            throws PatientException {
+        // GIVEN
+        // WHEN
+        boolean result = reportService.isPatientsMale(patientGeneric1.getSex());
+
+        // THEN
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @Tag("isPatientsMale")
+    @DisplayName("isPatientsMale - OK - Female")
+    public void givenPatientsFemale_whenCheckIfMale_thenReturnFalse()
+            throws PatientException {
+        // GIVEN
+        // WHEN
+        boolean result = reportService.isPatientsMale(patientGeneric2.getSex());
+
+        // THEN
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    @Tag("isPatientsMale")
+    @DisplayName("isPatientsMale - Error - Empty sex")
+    public void givenPatientWithEmptySex_whenCheck_thenReturnException()
+            throws PatientException {
+
+        assertThatExceptionOfType(PatientException.class).isThrownBy(() -> {
+            reportService.isPatientsMale("");
+        });
     }
 
     @Test
