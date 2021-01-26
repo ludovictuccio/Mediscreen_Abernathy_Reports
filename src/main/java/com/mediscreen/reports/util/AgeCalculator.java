@@ -22,10 +22,8 @@ public class AgeCalculator {
      *
      * @param birthdate
      * @return age
-     * @throws NullPointerException
-     * @throws IllegalArgumentException
      */
-    public static int ageCalculation(final String birthdate) {
+    public static int getPatientAge(final String birthdate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate personsBirthdate = LocalDate.parse(birthdate, formatter);
         LocalDate currentDate = LocalDate.now();

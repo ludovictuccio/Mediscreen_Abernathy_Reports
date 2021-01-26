@@ -32,7 +32,7 @@ public class AgeCalculatorTest {
         currentDate = LocalDate.now().minusYears(age);
         birthdate = formatter.format(currentDate);
 
-        int result = AgeCalculator.ageCalculation(birthdate);
+        int result = AgeCalculator.getPatientAge(birthdate);
 
         assertThat(age).isEqualTo(result);
     }
@@ -46,7 +46,7 @@ public class AgeCalculatorTest {
         currentDate = LocalDate.now().minusYears(age);
         birthdate = formatter.format(currentDate);
 
-        int result = AgeCalculator.ageCalculation(birthdate);
+        int result = AgeCalculator.getPatientAge(birthdate);
 
         assertThat(age).isEqualTo(result);
     }
@@ -59,7 +59,7 @@ public class AgeCalculatorTest {
         currentDate = LocalDate.now().minusMonths(6);
         birthdate = formatter.format(currentDate);
 
-        int age = AgeCalculator.ageCalculation(birthdate);
+        int age = AgeCalculator.getPatientAge(birthdate);
 
         assertThat(age).isEqualTo(1);
     }
@@ -72,7 +72,7 @@ public class AgeCalculatorTest {
         String birthdate = null;
 
         assertThatNullPointerException().isThrownBy(() -> {
-            AgeCalculator.ageCalculation(birthdate);
+            AgeCalculator.getPatientAge(birthdate);
         });
     }
 
@@ -85,7 +85,7 @@ public class AgeCalculatorTest {
         birthdate = formatter.format(currentDate);
 
         assertThatIllegalArgumentException().isThrownBy(() -> {
-            AgeCalculator.ageCalculation(birthdate);
+            AgeCalculator.getPatientAge(birthdate);
         });
     }
 
@@ -98,7 +98,7 @@ public class AgeCalculatorTest {
         birthdate = formatter.format(currentDate);
 
         assertThatIllegalArgumentException().isThrownBy(() -> {
-            AgeCalculator.ageCalculation(birthdate);
+            AgeCalculator.getPatientAge(birthdate);
         });
     }
 
@@ -111,7 +111,7 @@ public class AgeCalculatorTest {
         birthdate = formatter.format(currentDate);
 
         assertThatIllegalArgumentException().isThrownBy(() -> {
-            AgeCalculator.ageCalculation(birthdate);
+            AgeCalculator.getPatientAge(birthdate);
         });
     }
 

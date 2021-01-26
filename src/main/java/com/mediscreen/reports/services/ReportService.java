@@ -22,4 +22,12 @@ public interface ReportService {
      * @return NoteDto list
      */
     List<NoteDto> getAllPatientsNoteDto(final Long patId);
+
+    /**
+     * Method used to get the patient's age, to determine with his birthdate.
+     *
+     * @param birthdate
+     * @return int age the patient's age
+     */
+    int getPatientAge(final String birthdate);
 }

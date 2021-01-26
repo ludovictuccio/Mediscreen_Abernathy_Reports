@@ -11,6 +11,7 @@ import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
 import com.mediscreen.reports.proxies.MicroserviceNotesProxy;
 import com.mediscreen.reports.proxies.MicroservicePatientProxy;
+import com.mediscreen.reports.util.AgeCalculator;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -36,6 +37,13 @@ public class ReportServiceImpl implements ReportService {
      */
     public List<NoteDto> getAllPatientsNoteDto(final Long patId) {
         return microserviceNotesProxy.getAllPatientsNoteDto(patId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int getPatientAge(final String birthdate) {
+        return AgeCalculator.getPatientAge(birthdate);
     }
 
 }
