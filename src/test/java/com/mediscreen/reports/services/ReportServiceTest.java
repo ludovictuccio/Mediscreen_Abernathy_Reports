@@ -11,9 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
@@ -21,16 +21,16 @@ import com.mediscreen.reports.exceptions.PatientException;
 import com.mediscreen.reports.proxies.MicroserviceNotesProxy;
 import com.mediscreen.reports.proxies.MicroservicePatientProxy;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class ReportServiceTest {
 
-    @Autowired
-    private ReportService reportService;
+    // @Autowired
+    private ReportServiceImpl reportService;
 
-    @MockBean
+    @Mock
     private MicroservicePatientProxy microservicePatientProxy;
 
-    @MockBean
+    @Mock
     private MicroserviceNotesProxy microserviceNotesProxy;
 
     private List<NoteDto> notesList = new ArrayList<>();
@@ -42,9 +42,94 @@ public class ReportServiceTest {
 
     @BeforeEach
     public void setUpPerTest() {
+        String[] triggerTerms = new String[] { "Hemoglobine A1C",
+                "Microalbumine", "Taille", "Poids", "Fumeur", "Anormal",
+                "Cholesterol", "Vertige", "Rechute", "Reaction", "Anticorps" };
+        reportService = new ReportServiceImpl(microservicePatientProxy,
+                microserviceNotesProxy, triggerTerms);
         notesList.add(new NoteDto("note 1"));
         notesList.add(new NoteDto("note 2"));
         notesList.add(new NoteDto("note 3"));
+    }
+
+    @Test
+    @Tag("getTriggerTermsNumber")
+    @DisplayName("getTriggerTermsNumber - OK - 3 trigger terms")
+    public void givenThreeTriggerTerms_whenGet_thenReturnThreeSize() {
+        // GIVEN
+        notesList.add(new NoteDto("Microalbumine"));
+        notesList.add(new NoteDto("Hemoglobine A1C"));
+        notesList.add(new NoteDto("Poids"));
+
+        // WHEN
+        long result = reportService.getTriggerTermsNumber(notesList);
+
+        // THEN
+        assertThat(result).isEqualTo(3);
+    }
+
+    @Test
+    @Tag("getTriggerTermsNumber")
+    @DisplayName("getTriggerTermsNumber - OK - 3 trigger terms - 1 with accent 'é'")
+    public void givenThreeTriggerTerms_whenGetWithAccent_thenReturnThreeSize() {
+        // GIVEN
+        notesList.add(new NoteDto("Microalbumine"));
+        notesList.add(new NoteDto("Hémoglobine A1C"));// accent
+        notesList.add(new NoteDto("Poids"));
+
+        // WHEN
+        long result = reportService.getTriggerTermsNumber(notesList);
+
+        // THEN
+        assertThat(result).isEqualTo(3);
+    }
+
+    @Test
+    @Tag("getTriggerTermsNumber")
+    @DisplayName("getTriggerTermsNumber - OK - 3 trigger terms - 1 with accent 'â'")
+    public void givenThreeTriggerTerms_whenGetWithAccentCriconflex_thenReturnThreeSize() {
+        // GIVEN
+        notesList.add(new NoteDto("Microâlbumine"));// accent
+        notesList.add(new NoteDto("Hemoglobine A1C"));
+        notesList.add(new NoteDto("Poids"));
+
+        // WHEN
+        long result = reportService.getTriggerTermsNumber(notesList);
+
+        // THEN
+        assertThat(result).isEqualTo(3);
+    }
+
+    @Test
+    @Tag("getTriggerTermsNumber")
+    @DisplayName("getTriggerTermsNumber - OK - 0 trigger terms ")
+    public void givenThreeSizeNotes_whenGetWithoutTerms_thenReturnZeroSizeList() {
+        // GIVEN
+
+        // WHEN
+        long result = reportService.getTriggerTermsNumber(notesList);
+
+        // THEN
+        assertThat(result).isEqualTo(0);
+    }
+
+    @Test
+    @Tag("getTriggerTermsNumber")
+    @DisplayName("getTriggerTermsNumber - OK - 6 trigger terms - 3 identicals")
+    public void givenSixTriggerTerms_whenGetWithThreeIdenticals_thenReturnThreeSize() {
+        // GIVEN
+        notesList.add(new NoteDto("Microalbumine"));
+        notesList.add(new NoteDto("Microâlbumine"));
+        notesList.add(new NoteDto("Hemoglobine A1C"));
+        notesList.add(new NoteDto("Hemoglobine A1C"));
+        notesList.add(new NoteDto("Poids"));
+        notesList.add(new NoteDto("Poids"));
+
+        // WHEN
+        long result = reportService.getTriggerTermsNumber(notesList);
+
+        // THEN
+        assertThat(result).isEqualTo(3);
     }
 
     @Test

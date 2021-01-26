@@ -10,6 +10,13 @@ For deploiement, please refer to Patient microservice readme: https://github.com
 
 ---
 
+## Trigger terms file:
+
+- The file is available in /src/main/resources . This file contains all terms to search in patient's notes to determine diabete risks for reports.
+
+- If you want to add or modify thi file, **you must add terms without accents**, this to ignore accents while searching process.
+
+
 ## To run microservice:
 
 - **With your IDE**: refer to **application.properties** to set valid proxies url
