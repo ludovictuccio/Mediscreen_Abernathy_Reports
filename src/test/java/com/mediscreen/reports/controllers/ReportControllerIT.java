@@ -40,6 +40,7 @@ public class ReportControllerIT {
     private ObjectMapper objectMapper;
 
     private static final String URI_GET_REPORT = "/report";
+    private static final String URI_GET_REDIRECT_PATIENT_LIST = "/patient/list";
 
     @BeforeEach
     public void setUpPerTest() {
@@ -57,6 +58,17 @@ public class ReportControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.model().hasNoErrors())
                 .andReturn();
+    }
+
+    @Test
+    @Tag("/patient/list")
+    @DisplayName("Redirection to patient microservice - OK")
+    public void redirectionToPatientsList() throws Exception {
+        this.mockMvc
+                .perform(MockMvcRequestBuilders
+                        .get(URI_GET_REDIRECT_PATIENT_LIST))
+                .andExpect(status().is3xxRedirection());
+
     }
 
 }
