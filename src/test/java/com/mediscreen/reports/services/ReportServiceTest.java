@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.mediscreen.reports.domain.Report;
 import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
 import com.mediscreen.reports.exceptions.PatientException;
@@ -31,7 +32,7 @@ public class ReportServiceTest {
      * The age is normally calculated based on the current date. To change with
      * a fixed date, you must change the method called from:
      *
-     * ReportServiceImpl --> getDiabeteAssessment method
+     * ReportServiceImpl --> getPatientAge method
      */
 
     private ReportServiceImpl reportService;
@@ -93,6 +94,76 @@ public class ReportServiceTest {
         notesList.add(new NoteDto("note 1"));
         notesList.add(new NoteDto("note 2"));
         notesList.add(new NoteDto("note 3"));
+    }
+
+    @Test
+    @Tag("getDiabeteReport")
+    @DisplayName("getDiabeteReport - Ok")
+    public void givenTwentyNineYoMaleWithOneTerme_whenGetDiabeteReport_thenReturnReport()
+            throws PatientException {
+        // GIVEN
+        patientMale29.setId(1L);
+
+        notesList.add(new NoteDto(term1));
+
+        when(microservicePatientProxy.getPatientPersonalInformations(1L))
+                .thenReturn(patientMale29);
+        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
+                .thenReturn(notesList);
+
+        // WHEN
+        Report result = reportService.getDiabeteReport(1L);
+
+        // THEN
+        assertThat(result.getDiabeteAssessment()).isEqualTo(Assessment.None);
+        assertThat(result.getPatAge()).isEqualTo(29);
+        assertThat(result.getPatFirstName()).isEqualTo("Male");
+        assertThat(result.getPatLastName()).isEqualTo("Test");
+        assertThat(result.getPatId()).isEqualTo(1L);
+    }
+
+    @Test
+    @Tag("getDiabeteReport")
+    @DisplayName("getDiabeteReport - Ok - No notes")
+    public void givenNoNotes_whenGetDiabeteReport_thenReturnReport()
+            throws PatientException {
+        // GIVEN
+        patientMale29.setId(1L);
+
+        when(microservicePatientProxy.getPatientPersonalInformations(1L))
+                .thenReturn(patientMale29);
+        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
+                .thenReturn(notesList);
+
+        // WHEN
+        Report result = reportService.getDiabeteReport(1L);
+
+        // THEN
+        assertThat(result.getDiabeteAssessment()).isEqualTo(Assessment.None);
+        assertThat(result.getPatAge()).isEqualTo(29);
+        assertThat(result.getPatFirstName()).isEqualTo("Male");
+        assertThat(result.getPatLastName()).isEqualTo("Test");
+        assertThat(result.getPatId()).isEqualTo(1L);
+    }
+
+    @Test
+    @Tag("getDiabeteReport")
+    @DisplayName("getDiabeteReport - Ok - No personal informations")
+    public void givenNoPersonalInformations_whenGetDiabeteReport_thenReturnNull()
+            throws PatientException {
+        // GIVEN
+        patientMale29.setId(1L);
+
+        when(microservicePatientProxy.getPatientPersonalInformations(1L))
+                .thenReturn(null);
+        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
+                .thenReturn(notesList);
+
+        // WHEN
+        Report result = reportService.getDiabeteReport(1L);
+
+        // THEN
+        assertThat(result).isNull();
     }
 
     @Test

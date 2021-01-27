@@ -2,6 +2,8 @@ package com.mediscreen.reports.domain;
 
 import java.io.Serializable;
 
+import com.mediscreen.reports.util.Assessment;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,6 @@ public class Report implements Serializable {
 
     public int patAge;
 
-    public String diabeteAssessment;
+    public Assessment diabeteAssessment;
 
 }

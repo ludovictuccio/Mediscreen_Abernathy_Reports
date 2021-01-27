@@ -105,6 +105,22 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
+     * Method used to calculate patient's age. Change for use tests.
+     * 
+     * @param birthdate
+     * @return int age
+     */
+    public int getPatientAge(final String birthdate) {
+        // set this for app:
+        int age = AgeCalculator.getPatientAge(birthdate);
+
+        // set this for tests
+        // int age = AgeCalculator.getPatientAgeTest(birthdate);
+
+        return age;
+    }
+
+    /**
      * {@inheritDoc}
      * 
      */
@@ -112,13 +128,7 @@ public class ReportServiceImpl implements ReportService {
             final List<NoteDto> allPatientsNotes) throws PatientException {
 
         long triggerTermsNumber = getTriggerTermsNumber(allPatientsNotes);
-
-        // set this for app:
-        int patientAge = AgeCalculator.getPatientAge(patient.getBirthdate());
-
-        // set this for tests
-//        int patientAge = AgeCalculator
-//                .getPatientAgeTest(patient.getBirthdate());
+        int patientAge = getPatientAge(patient.getBirthdate());
 
         // return true if male, false if female
         boolean isPatientMale = isPatientsMale(patient.getSex());
@@ -147,9 +157,24 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * {@inheritDoc}
+     * 
      */
-    public Report getDiabeteReport(final PatientDto patient) {
-        return null;
+    public Report getDiabeteReport(final Long patId) throws PatientException {
 
+        try {
+            PatientDto patient = getPatientPersonalInformations(patId);
+            List<NoteDto> allNotes = getAllPatientsNoteDto(patId);
+            Assessment diabeteAssessment = getDiabeteAssessment(patient,
+                    allNotes);
+
+            Report report = new Report(patId, patient.getFirstName(),
+                    patient.getLastName(),
+                    getPatientAge(patient.getBirthdate()), diabeteAssessment);
+
+            return report;
+        } catch (NullPointerException np) {
+            LOGGER.error("No patient found with id:" + patId);
+        }
+        return null;
     }
 }

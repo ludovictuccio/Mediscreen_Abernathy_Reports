@@ -57,8 +57,9 @@ public interface ReportService {
     /**
      * Method used to get the patient's diabetes report.
      *
-     * @param patient dto
+     * @param long patId the patient's id
      * @return the diabete report
+     * @throws PatientException
      */
-    Report getDiabeteReport(final PatientDto patient);
+    Report getDiabeteReport(final Long patId) throws PatientException;
 }
