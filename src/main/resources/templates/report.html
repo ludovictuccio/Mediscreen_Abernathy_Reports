@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<title>Report</title>
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<h2 style="width: 100%">Patient's report - Diabetes assessment</h2>
+		</div>
+		<div class="row">
+			<div class="col-6"></div>
+			<div class="col-6 text-right">
+				<a href="/patient/list">Search other patient</a>&nbsp;
+			</div>
+		</div>
+		<div class="row" >
+			<table class="table table-striped table-bordered col-12"  style="width: 100%">
+				<thead>
+					<tr>
+						<th style="width: 10%">Id</th>
+						<th style="width: 20%">First Name</th>
+						<th style="width: 20%">Last Name</th>
+						<th style="width: 15%">Age</th>
+						<th style="width: 30%">Diabetes assessment</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="report : ${report}">
+						<td th:text="${report.patId}"></td>
+						<td th:text="${report.patFirstName}"></td>
+						<td th:text="${report.patLastName}"></td>
+						<td th:text="${report.patAge}"></td>
+						<td th:text="${report.diabeteAssessment}"></td>						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
