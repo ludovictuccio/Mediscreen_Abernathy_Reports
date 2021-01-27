@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mediscreen.reports.domain.Report;
 import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
+import com.mediscreen.reports.exceptions.PatientException;
 import com.mediscreen.reports.services.ReportService;
 
 import io.swagger.annotations.ApiOperation;
@@ -50,4 +52,12 @@ public class ReportControllerApiRest {
     public List<NoteDto> getAllPatientsNoteDto(@RequestParam final Long patId) {
         return reportService.getAllPatientsNoteDto(patId);
     }
+
+    @ApiOperation(value = "GET patient's diabete report", notes = "Need param patId (the patient's id) - Return response 200 OK or 404 not found")
+    @GetMapping("/report")
+    public Report getDiabeteReport(@RequestParam final Long patId)
+            throws PatientException {
+        return reportService.getDiabeteReport(patId);
+    }
+
 }

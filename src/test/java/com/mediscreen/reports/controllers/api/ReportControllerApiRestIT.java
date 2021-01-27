@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -25,7 +25,7 @@ import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
 import com.mediscreen.reports.services.ReportService;
 
-@SpringBootTest
+@WebMvcTest(value = ReportControllerApiRest.class)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ReportControllerApiRestIT {
@@ -44,6 +44,19 @@ public class ReportControllerApiRestIT {
 
     private static final String URI_GET_PATIENT_INFOS = "/api/reports/getPatientPersonalInformations";
     private static final String URI_GET_PATIENT_NOTES = "/api/reports/getAllPatientsNoteDto";
+    private static final String URI_GET_REPORT = "/api/reports/report";
+
+    @Test
+    @Tag("/report")
+    @DisplayName("GET report - OK - 200 - Existing patId")
+    public void aaaa() throws Exception {
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.get(URI_GET_REPORT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("patId", "1"))
+                .andExpect(status().isOk()).andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk()).andReturn();
+    }
 
     @Test
     @Tag("/getAllPatientsNoteDto")
