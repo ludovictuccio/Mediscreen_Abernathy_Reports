@@ -6,6 +6,7 @@ import com.mediscreen.reports.domain.Report;
 import com.mediscreen.reports.domain.dto.NoteDto;
 import com.mediscreen.reports.domain.dto.PatientDto;
 import com.mediscreen.reports.exceptions.PatientException;
+import com.mediscreen.reports.util.Assessment;
 
 public interface ReportService {
 
@@ -24,14 +25,6 @@ public interface ReportService {
      * @return NoteDto list
      */
     List<NoteDto> getAllPatientsNoteDto(final Long patId);
-
-    /**
-     * Method used to get the patient's age, to determine with his birthdate.
-     *
-     * @param birthdate
-     * @return int age the patient's age
-     */
-    int getPatientAge(final String birthdate);
 
     /**
      * Method used to determinate if patient's is male or female.
@@ -55,10 +48,11 @@ public interface ReportService {
      *
      * @param patient          dto
      * @param allPatientsNotes
-     * @return String diabete assessment
+     * @return diabete assessment
+     * @throws PatientException
      */
-    String getDiabeteAssessment(final PatientDto patient,
-            final List<NoteDto> allPatientsNotes);
+    Assessment getDiabeteAssessment(final PatientDto patient,
+            final List<NoteDto> allPatientsNotes) throws PatientException;
 
     /**
      * Method used to get the patient's diabetes report.

@@ -20,6 +20,7 @@ import com.mediscreen.reports.exceptions.PatientException;
 import com.mediscreen.reports.proxies.MicroserviceNotesProxy;
 import com.mediscreen.reports.proxies.MicroservicePatientProxy;
 import com.mediscreen.reports.util.AgeCalculator;
+import com.mediscreen.reports.util.Assessment;
 
 @PropertySource("triggerTerms")
 @Service
@@ -56,13 +57,6 @@ public class ReportServiceImpl implements ReportService {
      */
     public List<NoteDto> getAllPatientsNoteDto(final Long patId) {
         return microserviceNotesProxy.getAllPatientsNoteDto(patId);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int getPatientAge(final String birthdate) {
-        return AgeCalculator.getPatientAge(birthdate);
     }
 
     /**
@@ -112,11 +106,43 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * {@inheritDoc}
+     * 
      */
-    public String getDiabeteAssessment(final PatientDto patient,
-            final List<NoteDto> allPatientsNotes) {
-        return null;
+    public Assessment getDiabeteAssessment(final PatientDto patient,
+            final List<NoteDto> allPatientsNotes) throws PatientException {
 
+        long triggerTermsNumber = getTriggerTermsNumber(allPatientsNotes);
+
+        // set this for app:
+        int patientAge = AgeCalculator.getPatientAge(patient.getBirthdate());
+
+        // set this for tests
+//        int patientAge = AgeCalculator
+//                .getPatientAgeTest(patient.getBirthdate());
+
+        // return true if male, false if female
+        boolean isPatientMale = isPatientsMale(patient.getSex());
+
+        Assessment assessment = Assessment.None;
+
+        if (patientAge >= 30 && triggerTermsNumber >= 2
+                && triggerTermsNumber < 6) {
+            assessment = Assessment.Borderline;
+        } else if ((isPatientMale && (patientAge < 30
+                && (triggerTermsNumber == 3 || triggerTermsNumber == 4)))
+                || (!isPatientMale && patientAge < 30
+                        && (triggerTermsNumber >= 4 && triggerTermsNumber <= 6))
+                || (patientAge >= 30 && (triggerTermsNumber == 6
+                        || triggerTermsNumber == 7))) {
+            assessment = Assessment.InDanger;
+        } else if ((isPatientMale
+                && (patientAge < 30 && triggerTermsNumber >= 5))
+                || (!isPatientMale && patientAge < 30
+                        && triggerTermsNumber >= 7)
+                || (patientAge >= 30 && triggerTermsNumber >= 8)) {
+            assessment = Assessment.EarlyOnset;
+        }
+        return assessment;
     }
 
     /**

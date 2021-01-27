@@ -43,4 +43,18 @@ public class AgeCalculator {
         return age;
     }
 
+    /**
+     * For Tests : Set a fix current date to 2020-02-02
+     *
+     */
+    public static int getPatientAgeTest(final String birthdate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate personsBirthdate = LocalDate.parse(birthdate, formatter);
+        LocalDate currentDate = LocalDate.of(2020, 02, 02);
+
+        int age = Period.between(personsBirthdate, currentDate).getYears();
+
+        return age;
+    }
+
 }
