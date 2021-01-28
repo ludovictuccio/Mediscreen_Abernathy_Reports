@@ -11,12 +11,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
+@WebMvcTest(value = AgeCalculator.class)
 public class AgeCalculatorTest {
 
     private String birthdate;
     private DateTimeFormatter formatter;
     private LocalDate currentDate;
+
+    @Autowired
+    private AgeCalculator ageCalculator;
 
     @BeforeEach
     private void setUp() {
@@ -32,7 +38,7 @@ public class AgeCalculatorTest {
         currentDate = LocalDate.now().minusYears(age);
         birthdate = formatter.format(currentDate);
 
-        int result = AgeCalculator.getPatientAge(birthdate);
+        int result = ageCalculator.getPatientAge(birthdate);
 
         assertThat(age).isEqualTo(result);
     }
@@ -46,7 +52,7 @@ public class AgeCalculatorTest {
         currentDate = LocalDate.now().minusYears(age);
         birthdate = formatter.format(currentDate);
 
-        int result = AgeCalculator.getPatientAge(birthdate);
+        int result = ageCalculator.getPatientAge(birthdate);
 
         assertThat(age).isEqualTo(result);
     }
@@ -59,7 +65,7 @@ public class AgeCalculatorTest {
         currentDate = LocalDate.now().minusMonths(6);
         birthdate = formatter.format(currentDate);
 
-        int age = AgeCalculator.getPatientAge(birthdate);
+        int age = ageCalculator.getPatientAge(birthdate);
 
         assertThat(age).isEqualTo(1);
     }
@@ -72,7 +78,7 @@ public class AgeCalculatorTest {
         String birthdate = null;
 
         assertThatNullPointerException().isThrownBy(() -> {
-            AgeCalculator.getPatientAge(birthdate);
+            ageCalculator.getPatientAge(birthdate);
         });
     }
 
@@ -85,7 +91,7 @@ public class AgeCalculatorTest {
         birthdate = formatter.format(currentDate);
 
         assertThatIllegalArgumentException().isThrownBy(() -> {
-            AgeCalculator.getPatientAge(birthdate);
+            ageCalculator.getPatientAge(birthdate);
         });
     }
 
@@ -98,7 +104,7 @@ public class AgeCalculatorTest {
         birthdate = formatter.format(currentDate);
 
         assertThatIllegalArgumentException().isThrownBy(() -> {
-            AgeCalculator.getPatientAge(birthdate);
+            ageCalculator.getPatientAge(birthdate);
         });
     }
 
@@ -111,7 +117,7 @@ public class AgeCalculatorTest {
         birthdate = formatter.format(currentDate);
 
         assertThatIllegalArgumentException().isThrownBy(() -> {
-            AgeCalculator.getPatientAge(birthdate);
+            ageCalculator.getPatientAge(birthdate);
         });
     }
 
