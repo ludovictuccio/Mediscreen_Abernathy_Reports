@@ -21,10 +21,12 @@ public interface ReportService {
     /**
      * Method used to get patient's notes, with a dto.
      *
-     * @param patId
+     * @param lastName
+     * @param fisrtName
      * @return NoteDto list
      */
-    List<NoteDto> getAllPatientsNoteDto(final Long patId);
+    List<NoteDto> getAllPatientsNoteDto(final String lastName,
+            final String firstName);
 
     /**
      * Method used to determinate if patient's is male or female.

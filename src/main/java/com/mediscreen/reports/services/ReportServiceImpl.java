@@ -55,8 +55,10 @@ public class ReportServiceImpl implements ReportService {
     /**
      * {@inheritDoc}
      */
-    public List<NoteDto> getAllPatientsNoteDto(final Long patId) {
-        return microserviceNotesProxy.getAllPatientsNoteDto(patId);
+    public List<NoteDto> getAllPatientsNoteDto(final String lastName,
+            final String firstName) {
+        return microserviceNotesProxy.getAllPatientsNoteDto(lastName,
+                firstName);
     }
 
     /**
@@ -163,7 +165,8 @@ public class ReportServiceImpl implements ReportService {
 
         try {
             PatientDto patient = getPatientPersonalInformations(patId);
-            List<NoteDto> allNotes = getAllPatientsNoteDto(patId);
+            List<NoteDto> allNotes = getAllPatientsNoteDto(
+                    patient.getLastName(), patient.getFirstName());
             Assessment diabeteAssessment = getDiabeteAssessment(patient,
                     allNotes);
 
@@ -173,7 +176,8 @@ public class ReportServiceImpl implements ReportService {
 
             return report;
         } catch (NullPointerException np) {
-            LOGGER.error("No patient found with id:" + patId);
+            LOGGER.error(
+                    "Report microservice - No patient found with id:" + patId);
         }
         return null;
     }

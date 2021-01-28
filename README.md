@@ -2,7 +2,7 @@
 
 # Mediscreen_Abernathy - Reports
 
-OpenClassrooms - Project 9 / Mediscreen_Abernathy App - Reports
+OpenClassrooms - Project 9 / Mediscreen_Abernathy App - Reports microservice
 
 ---
 
@@ -12,9 +12,9 @@ For deploiement, please refer to Patient microservice readme: https://github.com
 
 ## Trigger terms file:
 
-- The file is available in /src/main/resources . This file contains all terms to search in patient's notes to determine diabete risks for reports.
+- The file is available in **'/src/main/resources'** . This file contains all terms to search in patient's notes to determine diabete assessments for reports.
 
-- If you want to add or modify thi file, **you must add terms without accents**, this to ignore accents while searching process.
+- If you want to add or modify this file, **you must add terms without accents** to ignore accents while searching process.
 
 
 ## To run microservice:

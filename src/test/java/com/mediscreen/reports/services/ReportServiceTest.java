@@ -108,8 +108,9 @@ public class ReportServiceTest {
 
         when(microservicePatientProxy.getPatientPersonalInformations(1L))
                 .thenReturn(patientMale29);
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(notesList);
+        when(microserviceNotesProxy.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName()))
+                        .thenReturn(notesList);
 
         // WHEN
         Report result = reportService.getDiabeteReport(1L);
@@ -132,8 +133,9 @@ public class ReportServiceTest {
 
         when(microservicePatientProxy.getPatientPersonalInformations(1L))
                 .thenReturn(patientMale29);
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(notesList);
+        when(microserviceNotesProxy.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName()))
+                        .thenReturn(notesList);
 
         // WHEN
         Report result = reportService.getDiabeteReport(1L);
@@ -144,26 +146,6 @@ public class ReportServiceTest {
         assertThat(result.getPatFirstName()).isEqualTo("Male");
         assertThat(result.getPatLastName()).isEqualTo("Test");
         assertThat(result.getPatId()).isEqualTo(1L);
-    }
-
-    @Test
-    @Tag("getDiabeteReport")
-    @DisplayName("getDiabeteReport - Ok - No personal informations")
-    public void givenNoPersonalInformations_whenGetDiabeteReport_thenReturnNull()
-            throws PatientException {
-        // GIVEN
-        patientMale29.setId(1L);
-
-        when(microservicePatientProxy.getPatientPersonalInformations(1L))
-                .thenReturn(null);
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(notesList);
-
-        // WHEN
-        Report result = reportService.getDiabeteReport(1L);
-
-        // THEN
-        assertThat(result).isNull();
     }
 
     @Test
@@ -860,11 +842,13 @@ public class ReportServiceTest {
     @DisplayName("getAllPatientsNoteDto - OK - 3 notes")
     public void givenPatientWithNotes_whenGet_thenReturnAllNotesList() {
         // GIVEN
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(notesList);
+        when(microserviceNotesProxy.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName()))
+                        .thenReturn(notesList);
 
         // WHEN
-        List<NoteDto> result = reportService.getAllPatientsNoteDto(1L);
+        List<NoteDto> result = reportService.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName());
 
         // THEN
         assertThat(result).isNotNull();
@@ -879,11 +863,13 @@ public class ReportServiceTest {
     @DisplayName("getAllPatientsNoteDto - OK - 0 notes")
     public void givenPatientWithoutNotes_whenGet_thenReturnZeroListSize() {
         // GIVEN
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(new ArrayList<>());
+        when(microserviceNotesProxy.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName()))
+                        .thenReturn(new ArrayList<>());
 
         // WHEN
-        List<NoteDto> result = reportService.getAllPatientsNoteDto(1L);
+        List<NoteDto> result = reportService.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName());
 
         // THEN
         assertThat(result).isNotNull();
