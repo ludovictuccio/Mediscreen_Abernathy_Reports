@@ -11,8 +11,8 @@ import feign.FeignException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(FeignException.class)
-    public String handleFeignStatusException(FeignException e,
-            HttpServletResponse response) {
+    public String handleFeignStatusException(final FeignException e,
+            final HttpServletResponse response) {
         response.setStatus(e.status());
         return "Patient not found with this id ";
     }

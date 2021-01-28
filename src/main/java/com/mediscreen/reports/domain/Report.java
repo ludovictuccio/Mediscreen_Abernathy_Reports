@@ -17,14 +17,29 @@ public class Report implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Long patId;
+    /**
+     * The patient's id
+     */
+    private Long patId;
 
-    public String patFirstName;
+    /**
+     * The patient's firstName
+     */
+    private String patFirstName;
 
-    public String patLastName;
+    /**
+     * The patient's lastName
+     */
+    private String patLastName;
 
-    public int patAge;
+    /**
+     * The patient's age
+     */
+    private int patAge;
 
-    public Assessment diabeteAssessment;
+    /**
+     * The patient's diabetes assessment
+     */
+    private Assessment diabeteAssessment;
 
 }

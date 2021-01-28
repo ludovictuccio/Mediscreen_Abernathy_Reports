@@ -10,7 +10,7 @@ import com.mediscreen.reports.domain.dto.PatientDto;
 public interface MicroservicePatientProxy {
 
     @GetMapping("/api/patient/getPatientPersonalInformations/{patId}")
-    public PatientDto getPatientPersonalInformations(
+    PatientDto getPatientPersonalInformations(
             @PathVariable("patId") Long patId);
 
 }

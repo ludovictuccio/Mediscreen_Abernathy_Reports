@@ -16,17 +16,16 @@ public interface ReportService {
      * @param patId
      * @return PatientDto
      */
-    PatientDto getPatientPersonalInformations(final Long patId);
+    PatientDto getPatientPersonalInformations(Long patId);
 
     /**
      * Method used to get patient's notes, with a dto.
      *
      * @param lastName
-     * @param fisrtName
+     * @param firstName
      * @return NoteDto list
      */
-    List<NoteDto> getAllPatientsNoteDto(final String lastName,
-            final String firstName);
+    List<NoteDto> getAllPatientsNoteDto(String lastName, String firstName);
 
     /**
      * Method used to determinate if patient's is male or female.
@@ -35,7 +34,7 @@ public interface ReportService {
      * @return boolean isPatientMale
      * @throws PatientException
      */
-    boolean isPatientsMale(final String sex) throws PatientException;
+    boolean isPatientsMale(String sex) throws PatientException;
 
     /**
      * Method used to determine the number of patient's trigger terms.
@@ -43,7 +42,7 @@ public interface ReportService {
      * @param allPatientsNotes dto
      * @return long triggerTermsNumber the number of patient's trigger terms
      */
-    long getTriggerTermsNumber(final List<NoteDto> allPatientsNotes);
+    long getTriggerTermsNumber(List<NoteDto> allPatientsNotes);
 
     /**
      * Method used to determine the patient's diabetes assessment.
@@ -53,15 +52,15 @@ public interface ReportService {
      * @return diabete assessment
      * @throws PatientException
      */
-    Assessment getDiabeteAssessment(final PatientDto patient,
+    Assessment getDiabeteAssessment(PatientDto patient,
             final List<NoteDto> allPatientsNotes) throws PatientException;
 
     /**
      * Method used to get the patient's diabetes report.
      *
-     * @param long patId the patient's id
+     * @param patId the patient's id
      * @return the diabete report
      * @throws PatientException
      */
-    Report getDiabeteReport(final Long patId) throws PatientException;
+    Report getDiabeteReport(Long patId) throws PatientException;
 }

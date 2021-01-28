@@ -11,7 +11,8 @@ import org.springframework.web.context.request.WebRequest;
 public class BadRequestAdvisor {
 
     @ExceptionHandler({ PatientException.class })
-    public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
+    public ResponseEntity<Object> handleAll(final Exception ex,
+            final WebRequest request) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,
                 ex.getLocalizedMessage(), "error occurred");
         return new ResponseEntity<Object>(apiError, new HttpHeaders(),

@@ -11,7 +11,7 @@ import com.mediscreen.reports.util.AgeCalculator;
 @SpringBootApplication
 public class MediscreenAbernathyReportsApplication {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SpringApplication.run(MediscreenAbernathyReportsApplication.class,
                 args);
     }
