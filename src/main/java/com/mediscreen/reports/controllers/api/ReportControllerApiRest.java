@@ -47,10 +47,11 @@ public class ReportControllerApiRest {
         return new ResponseEntity<PatientDto>(HttpStatus.NOT_FOUND);
     }
 
-    @ApiOperation(value = "GET all patient's notes DTO list", notes = "Need param patId (the patient's id) - Return response 200 OK or 404 not found")
+    @ApiOperation(value = "GET all patient's notes DTO list", notes = "Need param 'lastName' & 'firstName' - Return response 200 OK or 404 not found")
     @GetMapping("/getAllPatientsNoteDto")
-    public List<NoteDto> getAllPatientsNoteDto(@RequestParam final Long patId) {
-        return reportService.getAllPatientsNoteDto(patId);
+    public List<NoteDto> getAllPatientsNoteDto(
+            @RequestParam final String lastName, final String firstName) {
+        return reportService.getAllPatientsNoteDto(lastName, firstName);
     }
 
     @ApiOperation(value = "GET patient's diabete report", notes = "Need param patId (the patient's id) - Return response 200 OK or 404 not found")

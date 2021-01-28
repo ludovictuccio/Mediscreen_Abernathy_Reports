@@ -68,12 +68,14 @@ public class ReportControllerApiRestIT {
         allNotesList.add(note1);
         allNotesList.add(note2);
 
-        when(reportService.getAllPatientsNoteDto(1L)).thenReturn(allNotesList);
+        when(reportService.getAllPatientsNoteDto("TestNone", "Test"))
+                .thenReturn(allNotesList);
 
         this.mockMvc
                 .perform(MockMvcRequestBuilders.get(URI_GET_PATIENT_NOTES)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("patId", "1"))
+                        .param("lastName", "TestNone")
+                        .param("firstName", "Test"))
                 .andExpect(status().isOk()).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk()).andReturn();
     }
@@ -82,13 +84,14 @@ public class ReportControllerApiRestIT {
     @Tag("/getAllPatientsNoteDto")
     @DisplayName("GET PatientPersonalInformations - OK - 200 - Empty list")
     public void givenZeroNotes_whenGetNotes_thenReturnOk() throws Exception {
-        when(reportService.getAllPatientsNoteDto(1L))
+        when(reportService.getAllPatientsNoteDto("TestNone", "Test"))
                 .thenReturn(new ArrayList<>());
 
         this.mockMvc
                 .perform(MockMvcRequestBuilders.get(URI_GET_PATIENT_NOTES)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("patId", "1"))
+                        .param("lastName", "TestNone")
+                        .param("firstName", "Test"))
                 .andExpect(status().isOk()).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk()).andReturn();
     }

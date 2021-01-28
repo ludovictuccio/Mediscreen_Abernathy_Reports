@@ -35,14 +35,19 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private MicroserviceNotesProxy microserviceNotesProxy;
 
+    @Autowired
+    public AgeCalculator ageCalculator;
+
     private String[] triggerTerms;
 
     public ReportServiceImpl(final MicroservicePatientProxy patientProxy,
             final MicroserviceNotesProxy notesProxy,
-            @Value("${triggerTerms}") final String[] triggerTermsList) {
+            @Value("${triggerTerms}") final String[] triggerTermsList,
+            final AgeCalculator ageCalcul) {
         this.microservicePatientProxy = patientProxy;
         this.microserviceNotesProxy = notesProxy;
         this.triggerTerms = triggerTermsList;
+        this.ageCalculator = ageCalcul;
     }
 
     /**
@@ -55,8 +60,10 @@ public class ReportServiceImpl implements ReportService {
     /**
      * {@inheritDoc}
      */
-    public List<NoteDto> getAllPatientsNoteDto(final Long patId) {
-        return microserviceNotesProxy.getAllPatientsNoteDto(patId);
+    public List<NoteDto> getAllPatientsNoteDto(final String lastName,
+            final String firstName) {
+        return microserviceNotesProxy.getAllPatientsNoteDto(lastName,
+                firstName);
     }
 
     /**
@@ -105,18 +112,13 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * Method used to calculate patient's age. Change for use tests.
+     * Method used to calculate patient's age.
      * 
      * @param birthdate
      * @return int age
      */
-    public int getPatientAge(final String birthdate) {
-        // set this for app:
-        int age = AgeCalculator.getPatientAge(birthdate);
-
-        // set this for tests
-        // int age = AgeCalculator.getPatientAgeTest(birthdate);
-
+    public int getAge(final String birthdate) {
+        int age = ageCalculator.getPatientAge(birthdate);
         return age;
     }
 
@@ -128,7 +130,8 @@ public class ReportServiceImpl implements ReportService {
             final List<NoteDto> allPatientsNotes) throws PatientException {
 
         long triggerTermsNumber = getTriggerTermsNumber(allPatientsNotes);
-        int patientAge = getPatientAge(patient.getBirthdate());
+
+        int patientAge = getAge(patient.getBirthdate());
 
         // return true if male, false if female
         boolean isPatientMale = isPatientsMale(patient.getSex());
@@ -163,17 +166,21 @@ public class ReportServiceImpl implements ReportService {
 
         try {
             PatientDto patient = getPatientPersonalInformations(patId);
-            List<NoteDto> allNotes = getAllPatientsNoteDto(patId);
+
+            List<NoteDto> allNotes = getAllPatientsNoteDto(
+                    patient.getLastName(), patient.getFirstName());
+
             Assessment diabeteAssessment = getDiabeteAssessment(patient,
                     allNotes);
 
             Report report = new Report(patId, patient.getFirstName(),
-                    patient.getLastName(),
-                    getPatientAge(patient.getBirthdate()), diabeteAssessment);
+                    patient.getLastName(), getAge(patient.getBirthdate()),
+                    diabeteAssessment);
 
             return report;
         } catch (NullPointerException np) {
-            LOGGER.error("No patient found with id:" + patId);
+            LOGGER.error(
+                    "Report microservice - No patient found with id:" + patId);
         }
         return null;
     }

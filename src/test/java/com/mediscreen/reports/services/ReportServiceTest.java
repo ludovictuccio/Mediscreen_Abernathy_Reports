@@ -21,19 +21,11 @@ import com.mediscreen.reports.domain.dto.PatientDto;
 import com.mediscreen.reports.exceptions.PatientException;
 import com.mediscreen.reports.proxies.MicroserviceNotesProxy;
 import com.mediscreen.reports.proxies.MicroservicePatientProxy;
+import com.mediscreen.reports.util.AgeCalculator;
 import com.mediscreen.reports.util.Assessment;
 
 @ExtendWith(MockitoExtension.class)
 public class ReportServiceTest {
-
-    /*
-     * TO USE THIS TESTS :
-     *
-     * The age is normally calculated based on the current date. To change with
-     * a fixed date, you must change the method called from:
-     *
-     * ReportServiceImpl --> getPatientAge method
-     */
 
     private ReportServiceImpl reportService;
 
@@ -42,6 +34,9 @@ public class ReportServiceTest {
 
     @Mock
     private MicroserviceNotesProxy microserviceNotesProxy;
+
+    @Mock
+    public AgeCalculator ageCalculator;
 
     private List<NoteDto> notesList;
 
@@ -54,12 +49,12 @@ public class ReportServiceTest {
     private static PatientDto patientGeneric2 = new PatientDto(2L, "Generic2",
             "Patient2", date30, "F");
 
-    private static PatientDto patientMale29;
-    private static PatientDto patientMale30;
-    private static PatientDto patientMale31;
-    private static PatientDto patientFemale29;
-    private static PatientDto patientFemale30;
-    private static PatientDto patientFemale31;
+    private PatientDto patientMale29;
+    private PatientDto patientMale30;
+    private PatientDto patientMale31;
+    private PatientDto patientFemale29;
+    private PatientDto patientFemale30;
+    private PatientDto patientFemale31;
 
     private String term1 = "Hemoglobine A1C";
     private String term2 = "Microalbumine";
@@ -71,25 +66,23 @@ public class ReportServiceTest {
     private String term8 = "Vertige";
     private String term9 = "Rechute";
 
-    static {
+    @BeforeEach
+    public void setUpPerTest() {
+        notesList = new ArrayList<>();
+        notesList.clear();
+
         patientMale29 = new PatientDto("Test", "Male", date29, "M");
         patientMale30 = new PatientDto("Test", "Male", date30, "M");
         patientMale31 = new PatientDto("Test", "Male", date31, "M");
         patientFemale29 = new PatientDto("Test", "Male", date29, "F");
         patientFemale30 = new PatientDto("Test", "Male", date30, "F");
         patientFemale31 = new PatientDto("Test", "Male", date31, "F");
-    }
-
-    @BeforeEach
-    public void setUpPerTest() {
-        notesList = new ArrayList<>();
-        notesList.clear();
 
         String[] triggerTerms = new String[] { "Hemoglobine A1C",
                 "Microalbumine", "Taille", "Poids", "Fumeur", "Anormal",
                 "Cholesterol", "Vertige", "Rechute", "Reaction", "Anticorps" };
         reportService = new ReportServiceImpl(microservicePatientProxy,
-                microserviceNotesProxy, triggerTerms);
+                microserviceNotesProxy, triggerTerms, ageCalculator);
 
         notesList.add(new NoteDto("note 1"));
         notesList.add(new NoteDto("note 2"));
@@ -103,13 +96,16 @@ public class ReportServiceTest {
             throws PatientException {
         // GIVEN
         patientMale29.setId(1L);
-
         notesList.add(new NoteDto(term1));
 
         when(microservicePatientProxy.getPatientPersonalInformations(1L))
                 .thenReturn(patientMale29);
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(notesList);
+        when(microserviceNotesProxy.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName()))
+                        .thenReturn(notesList);
+
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
 
         // WHEN
         Report result = reportService.getDiabeteReport(1L);
@@ -132,9 +128,11 @@ public class ReportServiceTest {
 
         when(microservicePatientProxy.getPatientPersonalInformations(1L))
                 .thenReturn(patientMale29);
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(notesList);
-
+        when(microserviceNotesProxy.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName()))
+                        .thenReturn(notesList);
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Report result = reportService.getDiabeteReport(1L);
 
@@ -147,32 +145,13 @@ public class ReportServiceTest {
     }
 
     @Test
-    @Tag("getDiabeteReport")
-    @DisplayName("getDiabeteReport - Ok - No personal informations")
-    public void givenNoPersonalInformations_whenGetDiabeteReport_thenReturnNull()
-            throws PatientException {
-        // GIVEN
-        patientMale29.setId(1L);
-
-        when(microservicePatientProxy.getPatientPersonalInformations(1L))
-                .thenReturn(null);
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(notesList);
-
-        // WHEN
-        Report result = reportService.getDiabeteReport(1L);
-
-        // THEN
-        assertThat(result).isNull();
-    }
-
-    @Test
     @Tag("getDiabeteAssessment")
     @DisplayName("getDiabeteAssessment - OK - None - 0 terms - 31 yo")
     public void givenThirtyOneYoMaleWithZeroTerms_whenGetAssessment_thenReturnNone()
             throws PatientException {
         // GIVEN
-
+        when(ageCalculator.getPatientAge(patientMale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale31,
                 notesList);
@@ -187,7 +166,8 @@ public class ReportServiceTest {
     public void givenTwentyNineOneYoMaleWithZeroTerms_whenGetAssessment_thenReturnNone()
             throws PatientException {
         // GIVEN
-
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -204,6 +184,8 @@ public class ReportServiceTest {
         // GIVEN
         notesList.add(new NoteDto(term1));
         notesList.add(new NoteDto(term2));
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -221,6 +203,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term1));
         notesList.add(new NoteDto(term2));
         notesList.add(new NoteDto(term3));
+        when(ageCalculator.getPatientAge(patientFemale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale29,
                 notesList);
@@ -237,6 +221,9 @@ public class ReportServiceTest {
         // GIVEN
         notesList.add(new NoteDto(term1));
         notesList.add(new NoteDto(term2));
+
+        when(ageCalculator.getPatientAge(patientFemale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale31,
                 notesList);
@@ -253,6 +240,8 @@ public class ReportServiceTest {
         // GIVEN
         notesList.add(new NoteDto(term1));
         notesList.add(new NoteDto(term2));
+        when(ageCalculator.getPatientAge(patientFemale30.getBirthdate()))
+                .thenReturn(30);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale30,
                 notesList);
@@ -271,6 +260,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term2));
         notesList.add(new NoteDto(term3));
         notesList.add(new NoteDto(term4));
+        when(ageCalculator.getPatientAge(patientFemale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale29,
                 notesList);
@@ -290,6 +281,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term3));
         notesList.add(new NoteDto(term4));
         notesList.add(new NoteDto(term5));
+        when(ageCalculator.getPatientAge(patientFemale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale29,
                 notesList);
@@ -310,6 +303,9 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term4));
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
+        when(ageCalculator.getPatientAge(patientFemale29.getBirthdate()))
+                .thenReturn(29);
+
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale29,
                 notesList);
@@ -327,6 +323,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term1));
         notesList.add(new NoteDto(term2));
         notesList.add(new NoteDto(term3));
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -345,6 +343,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term2));
         notesList.add(new NoteDto(term3));
         notesList.add(new NoteDto(term4));
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -365,6 +365,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term4));
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
+        when(ageCalculator.getPatientAge(patientMale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale31,
                 notesList);
@@ -385,6 +387,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term4));
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
+        when(ageCalculator.getPatientAge(patientFemale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale31,
                 notesList);
@@ -406,6 +410,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
+        when(ageCalculator.getPatientAge(patientMale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale31,
                 notesList);
@@ -427,6 +433,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
+        when(ageCalculator.getPatientAge(patientFemale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale31,
                 notesList);
@@ -447,6 +455,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term4));
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
+        when(ageCalculator.getPatientAge(patientFemale30.getBirthdate()))
+                .thenReturn(30);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale30,
                 notesList);
@@ -466,6 +476,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term3));
         notesList.add(new NoteDto(term4));
         notesList.add(new NoteDto(term5));
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -486,6 +498,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term4));
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -507,6 +521,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -529,6 +545,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -552,6 +570,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
         notesList.add(new NoteDto(term9));
+        when(ageCalculator.getPatientAge(patientMale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale29,
                 notesList);
@@ -573,6 +593,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term5));
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
+        when(ageCalculator.getPatientAge(patientFemale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale29,
                 notesList);
@@ -595,6 +617,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
+        when(ageCalculator.getPatientAge(patientFemale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale29,
                 notesList);
@@ -618,6 +642,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
         notesList.add(new NoteDto(term9));
+        when(ageCalculator.getPatientAge(patientFemale29.getBirthdate()))
+                .thenReturn(29);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale29,
                 notesList);
@@ -640,6 +666,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
+        when(ageCalculator.getPatientAge(patientFemale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale31,
                 notesList);
@@ -663,6 +691,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
         notesList.add(new NoteDto(term9));
+        when(ageCalculator.getPatientAge(patientFemale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientFemale31,
                 notesList);
@@ -685,6 +715,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
+        when(ageCalculator.getPatientAge(patientMale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale31,
                 notesList);
@@ -708,6 +740,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
         notesList.add(new NoteDto(term9));
+        when(ageCalculator.getPatientAge(patientMale31.getBirthdate()))
+                .thenReturn(31);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale31,
                 notesList);
@@ -730,6 +764,8 @@ public class ReportServiceTest {
         notesList.add(new NoteDto(term6));
         notesList.add(new NoteDto(term7));
         notesList.add(new NoteDto(term8));
+        when(ageCalculator.getPatientAge(patientMale30.getBirthdate()))
+                .thenReturn(30);
         // WHEN
         Assessment result = reportService.getDiabeteAssessment(patientMale30,
                 notesList);
@@ -860,11 +896,13 @@ public class ReportServiceTest {
     @DisplayName("getAllPatientsNoteDto - OK - 3 notes")
     public void givenPatientWithNotes_whenGet_thenReturnAllNotesList() {
         // GIVEN
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(notesList);
+        when(microserviceNotesProxy.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName()))
+                        .thenReturn(notesList);
 
         // WHEN
-        List<NoteDto> result = reportService.getAllPatientsNoteDto(1L);
+        List<NoteDto> result = reportService.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName());
 
         // THEN
         assertThat(result).isNotNull();
@@ -879,11 +917,13 @@ public class ReportServiceTest {
     @DisplayName("getAllPatientsNoteDto - OK - 0 notes")
     public void givenPatientWithoutNotes_whenGet_thenReturnZeroListSize() {
         // GIVEN
-        when(microserviceNotesProxy.getAllPatientsNoteDto(1L))
-                .thenReturn(new ArrayList<>());
+        when(microserviceNotesProxy.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName()))
+                        .thenReturn(new ArrayList<>());
 
         // WHEN
-        List<NoteDto> result = reportService.getAllPatientsNoteDto(1L);
+        List<NoteDto> result = reportService.getAllPatientsNoteDto(
+                patientMale29.getLastName(), patientMale29.getFirstName());
 
         // THEN
         assertThat(result).isNotNull();
