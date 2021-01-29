@@ -12,8 +12,7 @@ import com.mediscreen.reports.domain.dto.NoteDto;
 public interface MicroserviceNotesProxy {
 
     @GetMapping("/api/note/getAllPatientsNoteDto")
-    public List<NoteDto> getAllPatientsNoteDto(
-            @RequestParam final String lastName,
-            @RequestParam final String firstName);
+    List<NoteDto> getAllPatientsNoteDto(@RequestParam String lastName,
+            @RequestParam String firstName);
 
 }

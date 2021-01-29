@@ -22,7 +22,7 @@ public class AgeCalculator {
     /**
      * Age calculation method.
      *
-     * @param String birthdate
+     * @param birthdate
      * @return int age
      */
     public int getPatientAge(final String birthdate) {

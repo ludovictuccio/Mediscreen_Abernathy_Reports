@@ -36,13 +36,13 @@ public class PatientDto implements Serializable {
     @Setter
     private String sex;
 
-    public PatientDto(String lastName, String firstName, String birthdate,
-            String sex) {
+    public PatientDto(final String plastName, final String pfirstName,
+            final String pbirthdate, String psex) {
         super();
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.birthdate = birthdate;
-        this.sex = sex;
+        this.lastName = plastName;
+        this.firstName = pfirstName;
+        this.birthdate = pbirthdate;
+        this.sex = psex;
     }
 
 }

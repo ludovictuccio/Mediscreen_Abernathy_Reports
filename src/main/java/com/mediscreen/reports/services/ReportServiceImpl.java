@@ -36,9 +36,18 @@ public class ReportServiceImpl implements ReportService {
     private MicroserviceNotesProxy microserviceNotesProxy;
 
     @Autowired
-    public AgeCalculator ageCalculator;
+    private AgeCalculator ageCalculator;
 
     private String[] triggerTerms;
+
+    private static final int TWO = 2;
+    private static final int THREE = 3;
+    private static final int FOUR = 4;
+    private static final int FIVE = 5;
+    private static final int SIX = 6;
+    private static final int SEVEN = 7;
+    private static final int EIGHT = 8;
+    private static final int THIRTY = 30;
 
     public ReportServiceImpl(final MicroservicePatientProxy patientProxy,
             final MicroserviceNotesProxy notesProxy,
@@ -104,6 +113,7 @@ public class ReportServiceImpl implements ReportService {
      * Method used to ignore accents.
      *
      * @param string
+     * @return pattern.matcher
      */
     private static String getStringIgnoringAccents(final String string) {
         String strTemp = Normalizer.normalize(string, Normalizer.Form.NFD);
@@ -113,7 +123,7 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * Method used to calculate patient's age.
-     * 
+     *
      * @param birthdate
      * @return int age
      */
@@ -124,7 +134,7 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      */
     public Assessment getDiabeteAssessment(final PatientDto patient,
             final List<NoteDto> allPatientsNotes) throws PatientException {
@@ -138,21 +148,22 @@ public class ReportServiceImpl implements ReportService {
 
         Assessment assessment = Assessment.None;
 
-        if (patientAge >= 30 && triggerTermsNumber >= 2
-                && triggerTermsNumber < 6) {
+        if (patientAge >= THIRTY && triggerTermsNumber >= TWO
+                && triggerTermsNumber < SIX) {
             assessment = Assessment.Borderline;
-        } else if ((isPatientMale && (patientAge < 30
-                && (triggerTermsNumber == 3 || triggerTermsNumber == 4)))
-                || (!isPatientMale && patientAge < 30
-                        && (triggerTermsNumber >= 4 && triggerTermsNumber <= 6))
-                || (patientAge >= 30 && (triggerTermsNumber == 6
-                        || triggerTermsNumber == 7))) {
+        } else if ((isPatientMale && (patientAge < THIRTY
+                && (triggerTermsNumber == THREE || triggerTermsNumber == FOUR)))
+                || (!isPatientMale && patientAge < THIRTY
+                        && (triggerTermsNumber >= FOUR
+                                && triggerTermsNumber <= SIX))
+                || (patientAge >= THIRTY && (triggerTermsNumber == SIX
+                        || triggerTermsNumber == SEVEN))) {
             assessment = Assessment.InDanger;
         } else if ((isPatientMale
-                && (patientAge < 30 && triggerTermsNumber >= 5))
-                || (!isPatientMale && patientAge < 30
-                        && triggerTermsNumber >= 7)
-                || (patientAge >= 30 && triggerTermsNumber >= 8)) {
+                && (patientAge < THIRTY && triggerTermsNumber >= FIVE))
+                || (!isPatientMale && patientAge < THIRTY
+                        && triggerTermsNumber >= SEVEN)
+                || (patientAge >= THIRTY && triggerTermsNumber >= EIGHT)) {
             assessment = Assessment.EarlyOnset;
         }
         return assessment;
@@ -160,7 +171,7 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      */
     public Report getDiabeteReport(final Long patId) throws PatientException {
 
