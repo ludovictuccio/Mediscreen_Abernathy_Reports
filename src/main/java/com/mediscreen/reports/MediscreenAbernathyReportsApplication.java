@@ -3,9 +3,6 @@ package com.mediscreen.reports;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
-
-import com.mediscreen.reports.util.AgeCalculator;
 
 @EnableFeignClients
 @SpringBootApplication
@@ -16,9 +13,9 @@ public class MediscreenAbernathyReportsApplication {
                 args);
     }
 
-    @Bean
-    public AgeCalculator getAgeCalculator() {
-        return new AgeCalculator();
-    }
+//    @Bean
+//    public AgeCalculator getAgeCalculator() {
+//        return new AgeCalculator();
+//    }
 
 }
