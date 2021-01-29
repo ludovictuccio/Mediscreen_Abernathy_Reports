@@ -41,10 +41,10 @@ If you want to deploy all Mediscreen microservices, use the **docker-compose.yml
 
 - **Swagger 3:** http://localhost:8083/swagger-ui/index.html#/
 
-## JaCoCo
+## JaCoCo report
 
-![Screenshot](Reports-Jacoco.png)
+![Screenshot](Jacoco.PNG)
 
-## Surefire
+## Surefire report
 
-![Screenshot](Reports-Surefire.png)
+![Screenshot](Surefire.PNG)
