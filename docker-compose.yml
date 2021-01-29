@@ -1,0 +1,80 @@
+version: '3.3'
+
+services:
+  database:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    ports:
+      - 3307:3306
+    volumes:
+      - database-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mediscreen9
+      MYSQL_USER: abernathy
+      MYSQL_PASSWORD: mediscreen9
+      MYSQL_DATABASE: mediscreen_db
+    networks:
+      - md-net
+
+  apigateway:
+    image: mediscreen-apigateway
+    container_name: mediscreen-apigateway
+    ports:
+      - 8080:8080
+    networks:
+      - md-net
+    depends_on:
+      - patient
+    restart: always
+
+  patient:
+    image: mediscreen-patient
+    container_name: mediscreen-patient
+    ports:
+      - 8081:8081
+    networks:
+      - md-net
+    restart: always
+    depends_on:
+      - database
+
+  mediscreen-mongodb:
+    image: mongo
+    container_name: mediscreen-mongodb
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-volume:/data/db
+    networks:
+      - md-net
+
+  notes:
+    image: mediscreen-notes
+    container_name: mediscreen-notes
+    ports:
+      - 8082:8082
+    networks:
+      - md-net
+    restart: always
+    depends_on:
+      - mediscreen-mongodb
+
+  reports:
+    image: mediscreen-reports
+    container_name: mediscreen-reports
+    ports:
+      - 8083:8083
+    networks:
+      - md-net
+    restart: always
+
+
+networks:
+  md-net:
+      driver: bridge
+
+volumes:
+    database-volume:
+    mongo-volume:

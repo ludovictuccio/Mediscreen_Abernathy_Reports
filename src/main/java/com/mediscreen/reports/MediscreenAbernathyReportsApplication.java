@@ -13,9 +13,4 @@ public class MediscreenAbernathyReportsApplication {
                 args);
     }
 
-//    @Bean
-//    public AgeCalculator getAgeCalculator() {
-//        return new AgeCalculator();
-//    }
-
 }
