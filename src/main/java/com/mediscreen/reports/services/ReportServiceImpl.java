@@ -95,13 +95,13 @@ public class ReportServiceImpl implements ReportService {
      */
     public long getTriggerTermsNumber(final List<NoteDto> allPatientsNotes) {
 
-        // retrieve all patient's trigger terms notes
+        // retrieve all patient's concatenate notes
         String notesInString = allPatientsNotes.stream().map(NoteDto::getNote)
                 .map(String::toUpperCase).map(String::trim)
                 .map(string -> getStringIgnoringAccents(string))
                 .collect(Collectors.joining());
 
-        // count all trigger terms
+        // count all trigger terms in theses concatenate notes
         long triggerTermsNumber = Arrays.stream(triggerTerms)
                 .map(String::toUpperCase).filter(notesInString::contains)
                 .distinct().count();
